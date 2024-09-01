@@ -5,6 +5,7 @@ import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "
 import axios from 'axios';
 import { axios_api } from '@/libs/utils';
 import { Skeleton } from './ui/skeleton';
+import { getReimbursements } from '@/hooks';
 
 const chartConfig = {
   value: {
@@ -33,8 +34,8 @@ export default function ReimbursementBarChart() {
   useEffect(() => {
     const fetchReimbursements = async () => {
       try {
-        const response = await axios_api.get('/get_processed_data/reim');
-        setReimbursements(response.data['reimbursement_summary']);
+        const response = await getReimbursements()
+        setReimbursements(response.data['reimbursements']);
         setIsLoading(false);
       } catch (err) {
         setIsLoading(false);

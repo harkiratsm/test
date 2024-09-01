@@ -1,10 +1,7 @@
 'use client';
-import React, { useState } from 'react';
-// import { DashboardNav } from '@/components/dashboard-nav';
+import React from 'react';
 import { navItems } from '@/constants';
 import { cn } from '@/libs/utils';
-import { ChevronLeft } from 'lucide-react';
-import Link from 'next/link';
 import { DashboardNav } from '../navigation-menu';
 
 type SidebarProps = {
@@ -21,7 +18,6 @@ export default function Sidebar({ className }: SidebarProps) {
       )}
     >
       <div className="hidden p-5 pt-10 lg:block">
-        {/* create an span with text Interface */}
         <span className="text-3xl font-semibold text-purple">interface</span>
       </div>
       <div className="space-y-4 py-4">

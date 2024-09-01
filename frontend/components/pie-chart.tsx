@@ -1,8 +1,10 @@
 "use client"
-import React from 'react'
+import React, { useEffect } from 'react'
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "./ui/chart"
+import { getBlankOrders } from '@/hooks'
+import { toast } from './ui/use-toast'
 
 const generateRandomRGBColor = (): string => {
   const baseColor = "#724DFF" 
@@ -18,9 +20,6 @@ const generateRandomRGBColor = (): string => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
-interface DisputeChartProps {
-  refinedData: any
-}
 
 const chartConfig = {} satisfies ChartConfig
 
@@ -30,12 +29,32 @@ interface ChartData {
   fill: string;
 }
 
-export default function DisputeChart({ refinedData }: DisputeChartProps) {
-  const data = refinedData.map((item:any) => ({
+export default function DisputeChart() {
+  const [dispute, setDispute] = React.useState<any>([])
+
+  useEffect(() => {
+    const fetchDispute = async () => {
+      try {
+        const response = await getBlankOrders()
+        setDispute(response.data['blank_orders']);
+      } catch (err) {
+        toast({
+          title: 'Error',
+          description: 'Failed to fetch dispute data',
+        })
+      }
+    }
+
+    fetchDispute()
+  },[])
+
+  const data = dispute.map((item:any) => ({
     name: item.p_description,
     value: Math.abs(Math.round(item.net_amount * 100) / 100),
     fill: generateRandomRGBColor()
   }))
+
+ 
 
   return (
     <Card className="w-full p-4 h-full">

@@ -1,15 +1,14 @@
 'use client'
 import React, { useEffect, useState } from "react"
-import { BirdIcon, ChevronRightIcon, FileUpIcon, RocketIcon, Search, UploadIcon } from "lucide-react"
+import { BirdIcon, ChevronRightIcon, RocketIcon, Search, } from "lucide-react"
 import { Button } from "./ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card"
-import DisputeChart from "./pie-chart"
 import DisputeBarChart from "./bar-chart"
 import { UploadDialog } from "./upload"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "./ui/table"
 import DataTableView from "./data-table-view"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
-import { orderColumns, ToleranceColumns } from "./table-columns"
+import DisputeChart from "./pie-chart"
+import { activeTabs, views } from "@/constants"
 
 const DashboardCard = ({ title, value, onClick }: any) => {
   const formatValue = (val: any) => {
@@ -40,35 +39,10 @@ const DashboardCard = ({ title, value, onClick }: any) => {
   );
 };
 
-export interface DashboardUtilsProps {
-  results ?: any
-} 
-
-const isActiveTable = (title: string) => {
-  return title === 'Order & Payment Received' ? 'order_payment' : ( title === 'Tolerance rate breached' ? 'tolerance_breached' : 'dashboard')
-}
-
-export const DashboardUtils = ({results}: DashboardUtilsProps) => {
+export const DashboardUtils = ({categories}:any) => {
   const [modifierKey, setModifierKey] = useState('Ctrl')
   const [activeView, setActiveView] = useState('dashboard');
   const [uploadOpen, setUploadOpen] = useState(false);
-  const refinedData = results?.refined_data || {};
-
-
-  const views = {
-    order_payment : {
-      title: 'Orders',
-      columns: orderColumns,
-      filterColumn: 'order_id',
-      filterPlaceholder: 'Filter by Order ID'
-    },
-    tolerance_breached: {
-      title: 'Tolerance',
-      columns: ToleranceColumns,
-      filterColumn: 'order_id',
-      filterPlaceholder: 'Filter by Order ID'
-    }
-  }
 
   useEffect(() => {
     const agent = typeof navigator === 'undefined' ? '' : navigator.userAgent
@@ -78,7 +52,7 @@ export const DashboardUtils = ({results}: DashboardUtilsProps) => {
 
 
   const handleCardClick = (title: string) => {
-    setActiveView(isActiveTable(title))
+    setActiveView(activeTabs[title] ?? 'dashboard')
   };
 
   const renderDashboard = () => (
@@ -111,7 +85,7 @@ export const DashboardUtils = ({results}: DashboardUtilsProps) => {
     </Alert>
       
       <section className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-4">
-      {Object?.entries(refinedData.categories).map(([title, value], index) => (
+      {Object?.entries(categories).map(([title, value], index) => (
         <DashboardCard
           key={index}
           title={title}
@@ -122,18 +96,18 @@ export const DashboardUtils = ({results}: DashboardUtilsProps) => {
       </section>
       <section className="grid gap-2 grid-col-1 md:grid-cols-2 mt-4 w-full">
         <DisputeBarChart />
-        <DisputeChart refinedData={results?.blank_order} />
+        <DisputeChart />
       </section>
     </>
   );
 
   const renderTableView = () => (
-    <DataTableView activeView={activeView} results={results} views={views} setActiveView={setActiveView} />
+    <DataTableView activeView={activeView} views={views} setActiveView={setActiveView} />
   );
 
   return (
     <div className="mt-4 mx-4">
-      {results.order_payment.length > 0 ? (
+      {categories['Order & Payment Received'] > 0  ? (
         activeView === 'dashboard' ? renderDashboard() : renderTableView()
       ) : (
         <div

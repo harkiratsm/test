@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,17 +11,13 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, ChevronLeft, MoreHorizontal } from "lucide-react";
+import {  ChevronDown, ChevronLeft} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -33,6 +29,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getTolerances, getTransactions } from '@/hooks';
+import { toast } from './ui/use-toast';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -53,7 +51,7 @@ function DataTable<TData, TValue>({
   const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -188,21 +186,41 @@ interface ViewConfig {
   columns: ColumnDef<any, any>[];
   filterColumn?: string;
   filterPlaceholder?: string;
+  fetchData: () => Promise<{ [key: string]: any }>;
 }
 
 interface DataTableViewProps {
-  results: { [key: string]: any[] };
   activeView: string;
   setActiveView: (view: string) => void;
   views: { [key: string]: ViewConfig };
 }
 
-export default function DataTableView({ results, activeView, setActiveView, views }: DataTableViewProps) {
+
+export default function DataTableView({ activeView, setActiveView, views }: DataTableViewProps) {
   const activeViewConfig = views[activeView];
+  const [results, setResults] = useState<{ [key: string]: any }>({});
 
   if (!activeViewConfig) {
     return <div>Invalid view selected</div>;
   }
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        let res = await views[activeView].fetchData();
+        setResults(res?.data);
+      } catch (err) {
+        toast({
+          title: "Error",
+          description: `Failed to fetch ${activeView} data`,
+        });
+      }
+    };
+    console.log("results", results);
+    fetchResults();
+  }, []);
+
+
 
   return (
     <div className="container ml-3">

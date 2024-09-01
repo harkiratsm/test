@@ -1,9 +1,9 @@
 import { DashboardUtils } from "@/components/dashboard-utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { axios_api } from "@/libs/utils";
+import { getCategories } from "@/hooks";
 
 export default async function DashboardPage() {
-  const results = (await axios_api.get('/get_processed_data')).data
+  const categories = (await getCategories()).data['categories'];
   return (
     <ScrollArea className="h-[calc(100dvh-52px)]">  
         <section className="container grid items-center gap-6 pb-6 pt-12">
@@ -14,7 +14,7 @@ export default async function DashboardPage() {
           </div>
         </section>
         <hr className="max-w-x" /> 
-        <DashboardUtils results={results}/>
+        <DashboardUtils categories={categories}/>
     </ScrollArea>
 
 
