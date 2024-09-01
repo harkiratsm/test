@@ -81,9 +81,18 @@ export const activeTabs: activeTabs = {
 "Return": "returns",
 }
 
-  
 
-export const views = {
+interface View {
+    [key: string]: {
+        title: string;
+        columns: any;
+        filterColumn: string;
+        fetchData: () => any;
+        filterPlaceholder: string;
+    }
+}
+
+export const views: View = {
     order_payment : {
       title: 'Orders',
       columns: orderColumns,

@@ -57,33 +57,14 @@ export const DashboardUtils = ({categories}:any) => {
 
   const renderDashboard = () => (
     <>
-      
-      <div className="flex justify-center items-center">
-        <Button
-          variant="outline"
-          className="text-muted-foreground flex w-96 h-12 items-center justify-between rounded-lg mt-2"
-        >
-          <div className="flex items-center">
-            <Search className="mr-2 h-5 w-5" />
-            Search
-          </div>
-          <div>
-            <div className="text-muted-foreground bg-muted flex items-center rounded-md px-1.5 py-0.5 text-xs tracking-wider">
-              {modifierKey}+K
-            </div>
-          </div>
-        </Button>
-        <UploadDialog open={uploadOpen} setOpen={setUploadOpen}/> 
-      </div>
 
-      <Alert className="mt-2 max-w-md">
+<Alert className="mt-2 max-w-md">
       <RocketIcon className="h-4 w-4 text-purple" />
       <AlertTitle className="text-purple">Heads up!</AlertTitle>
       <AlertDescription className="text-muted-foreground">
-        If your current documents aren't sufficient, consider uploading new ones for better results. <span onClick={()=> setUploadOpen(true)} className="text-purple cursor-pointer">Upload now</span>
+        If your current documents aren&apos;t sufficient, consider uploading new ones for better results. <span onClick={()=> setUploadOpen(true)} className="text-purple cursor-pointer">Upload now</span>
       </AlertDescription>
     </Alert>
-      
       <section className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 mt-4">
       {Object?.entries(categories).map(([title, value], index) => (
         <DashboardCard
@@ -102,11 +83,28 @@ export const DashboardUtils = ({categories}:any) => {
   );
 
   const renderTableView = () => (
-    <DataTableView activeView={activeView} views={views} setActiveView={setActiveView} />
+    <DataTableView activeView={activeView} setActiveView={setActiveView} />
   );
 
   return (
     <div className="mt-4 mx-4">
+       <div className="flex justify-center items-center">
+        <Button
+          variant="outline"
+          className="text-muted-foreground flex w-96 h-12 items-center justify-between rounded-lg mt-2"
+        >
+          <div className="flex items-center">
+            <Search className="mr-2 h-5 w-5" />
+            Search
+          </div>
+          <div>
+            <div className="text-muted-foreground bg-muted flex items-center rounded-md px-1.5 py-0.5 text-xs tracking-wider">
+              {modifierKey}+K
+            </div>
+          </div>
+        </Button>
+        <UploadDialog open={uploadOpen} setOpen={setUploadOpen}/> 
+      </div>
       {categories['Order & Payment Received'] > 0  ? (
         activeView === 'dashboard' ? renderDashboard() : renderTableView()
       ) : (

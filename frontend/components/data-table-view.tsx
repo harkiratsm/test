@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/table";
 import { getTolerances, getTransactions } from '@/hooks';
 import { toast } from './ui/use-toast';
+import { views } from '@/constants';
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -192,23 +193,20 @@ interface ViewConfig {
 interface DataTableViewProps {
   activeView: string;
   setActiveView: (view: string) => void;
-  views: { [key: string]: ViewConfig };
 }
 
 
-export default function DataTableView({ activeView, setActiveView, views }: DataTableViewProps) {
+export default function DataTableView({ activeView, setActiveView}: DataTableViewProps) {
   const activeViewConfig = views[activeView];
   const [results, setResults] = useState<{ [key: string]: any }>({});
-
-  if (!activeViewConfig) {
-    return <div>Invalid view selected</div>;
-  }
 
   useEffect(() => {
     const fetchResults = async () => {
       try {
-        let res = await views[activeView].fetchData();
-        setResults(res?.data);
+        if (views[activeView] && typeof views[activeView].fetchData === 'function') {
+          let res = await views[activeView].fetchData();
+          setResults(res?.data);
+        }
       } catch (err) {
         toast({
           title: "Error",
@@ -216,9 +214,14 @@ export default function DataTableView({ activeView, setActiveView, views }: Data
         });
       }
     };
-    console.log("results", results);
+
     fetchResults();
-  }, []);
+  }, [activeView]);
+
+
+  if (!activeViewConfig) {
+    return <div>Invalid view selected</div>;
+  }
 
 
 
